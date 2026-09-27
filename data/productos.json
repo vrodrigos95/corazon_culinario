@@ -1,0 +1,113 @@
+{
+  "moneda": "MXN",
+  "envio": {
+    "gratisDesde": 500,
+    "costo": 80,
+    "nota": "PENDIENTE: definir costo de envío para compras menores a $500. Por ahora se usa $80 como referencia."
+  },
+  "categorias": [
+    { "id": "aderezos", "nombre": "Aderezos" },
+    { "id": "vinagretas", "nombre": "Vinagretas" },
+    { "id": "salsas", "nombre": "Salsas" },
+    { "id": "botanas", "nombre": "Para acompañar" }
+  ],
+  "productos": [
+    {
+      "id": "chimi",
+      "nombre": "Chimi",
+      "subtitulo": "Aderezo casero",
+      "categoria": "aderezos",
+      "presentacion": "250 ml",
+      "precio": 110,
+      "imagen": "assets/img/productos/chimi.jpg",
+      "escena": "assets/img/escenas/chimi-mesa.jpg",
+      "etiqueta": "El favorito",
+      "resumen": "Nuestro aderezo estrella, destacado por su gran sabor y versatilidad.",
+      "descripcion": "Todo comienza con el Chimi, nuestro aderezo estrella, destacado por su gran sabor y versatilidad.",
+      "idealPara": ["Carnes", "Mariscos", "Ensaladas", "Hamburguesas", "Pizza", "Sándwiches", "Botanas"]
+    },
+    {
+      "id": "salsa-universal",
+      "nombre": "Salsa Universal",
+      "subtitulo": "Para chilaquiles y mucho más",
+      "categoria": "salsas",
+      "presentacion": "460 ml · 925 ml",
+      "precio": 125,
+      "imagen": "assets/img/productos/salsa-universal.jpg",
+      "escena": "assets/img/escenas/salsas-universales.jpg",
+      "resumen": "Platillos deliciosos en pocos minutos, con el auténtico sabor de casa.",
+      "descripcion": "Platillos deliciosos en pocos minutos con nuestras salsas universales. Una base lista para preparar una gran variedad de platillos con el auténtico sabor de casa.",
+      "idealPara": ["Chilaquiles", "Lonchecitos bañados", "Huevos rancheros", "Tinga", "Enchiladas suizas", "Pastel azteca", "Taquitos de crema", "Mole de huevo", "Macarrones"],
+      "opciones": [
+        {
+          "clave": "sabor",
+          "etiqueta": "Sabor",
+          "valores": [
+            { "id": "verde", "nombre": "Verde", "color": "#9AA33A", "imagen": "assets/img/productos/salsa-verde.jpg" },
+            { "id": "roja", "nombre": "Roja", "color": "#C8502B", "imagen": "assets/img/productos/salsa-roja.jpg" }
+          ]
+        },
+        {
+          "clave": "tamano",
+          "etiqueta": "Tamaño",
+          "valores": [
+            { "id": "460", "nombre": "460 ml", "precio": 125 },
+            { "id": "925", "nombre": "925 ml", "precio": 198 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "semillas-enchiladas",
+      "nombre": "Semillas Enchiladas",
+      "subtitulo": "En aceite enchilado",
+      "categoria": "botanas",
+      "presentacion": "220 g",
+      "precio": 155,
+      "imagen": "assets/img/productos/semillas-enchiladas.jpg",
+      "escena": "assets/img/escenas/semillas-mesa.jpg",
+      "resumen": "Girasol, pepita, almendra y ajonjolí en aceite enchilado.",
+      "descripcion": "Semilla de girasol, pepita de calabaza, almendra fileteada y ajonjolí, bañados en un delicioso aceite enchilado lleno de sabor.",
+      "ingredientes": ["Semilla de girasol", "Pepita de calabaza", "Almendra fileteada", "Ajonjolí", "Aceite enchilado"]
+    },
+    {
+      "id": "aderezo-3-vinagres",
+      "nombre": "Aderezo 3 Vinagres",
+      "subtitulo": "Receta de la tía",
+      "categoria": "vinagretas",
+      "presentacion": "350 ml",
+      "precio": 175,
+      "imagen": "assets/img/productos/aderezo-3-vinagres.jpg",
+      "escena": "assets/img/escenas/vinagreta-ensalada.jpg",
+      "resumen": "Siempre la favorita para realzar cualquier ensalada.",
+      "descripcion": "Receta de la tía, siempre la favorita para realzar cualquier ensalada.",
+      "idealPara": ["Ensaladas verdes", "Verduras", "Pastas frías"]
+    },
+    {
+      "id": "vinagreta-agridulce",
+      "nombre": "Vinagreta Agridulce",
+      "subtitulo": "Con un toque de chile de árbol",
+      "categoria": "vinagretas",
+      "presentacion": "350 ml",
+      "precio": 175,
+      "imagen": "assets/img/productos/vinagreta-agridulce.jpg",
+      "escena": "assets/img/escenas/agridulce-mesa.jpg",
+      "resumen": "Con un ligero picor, ideal para ensaladas con fruta fresca.",
+      "descripcion": "Con un ligero picor, esta vinagreta de sabor auténtico es el complemento perfecto para ensaladas verdes con toques de fruta fresca.",
+      "idealPara": ["Ensaladas verdes", "Ensaladas con fruta", "Verduras asadas"]
+    },
+    {
+      "id": "salsa-morita",
+      "nombre": "Salsa Morita",
+      "subtitulo": "Ahumada y con carácter",
+      "categoria": "salsas",
+      "presentacion": "220 g",
+      "precio": 125,
+      "pendiente": "PENDIENTE: imagen y precio de referencia. Reemplazar cuando llegue la información real.",
+      "imagen": "assets/img/productos/salsa-morita.svg",
+      "resumen": "Chile morita con notas ahumadas, para darle carácter a tus platillos.",
+      "descripcion": "Salsa de chile morita con notas ahumadas y un picor que se queda. Hecha en casa, en tandas pequeñas.",
+      "idealPara": ["Tacos", "Carnes asadas", "Huevos", "Botanas"]
+    }
+  ]
+}

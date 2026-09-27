@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Producto · Corazón Culinario</title>
+  <meta name="description" content="Salsas y aderezos de receta familiar hechos a mano en Guadalajara.">
+  <meta name="theme-color" content="#FAF7F1">
+  <link rel="icon" href="assets/img/marca/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div data-layout="header"></div>
+
+  <main>
+    <section class="contenedor" style="padding: clamp(28px, 4vw, 44px) var(--gutter) clamp(64px, 9vw, 110px)">
+      <nav class="migas" aria-label="Ruta" style="margin-bottom: clamp(24px, 3vw, 36px)">
+        <a href="index.html">Inicio</a><span>/</span><a href="productos.html">Productos</a><span>/</span><span data-miga-nombre>…</span>
+      </nav>
+      <div data-detalle>
+        <div class="detalle">
+          <div class="detalle__foto skeleton"></div>
+          <div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion seccion--lino" data-relacionados-seccion hidden>
+      <div class="contenedor">
+        <div class="seccion__cabecera">
+          <div class="eyebrow eyebrow--olivo">También te puede gustar</div>
+          <h2 class="titulo-md">Más de la casa</h2>
+        </div>
+        <div class="grid-productos" data-relacionados></div>
+      </div>
+    </section>
+  </main>
+
+  <div data-layout="footer"></div>
+
+  <script type="module">
+    import { iniciarLayout, revelar, avisar, ICONOS } from './assets/js/layout.js';
+    import { cargarCatalogo, precioDe, imagenDe, opcionesPorDefecto, tieneOpciones, dinero, escapar, describirOpciones } from './assets/js/catalogo.js';
+    import { agregar } from './assets/js/carrito.js';
+    import { tarjetaHTML, conectarAgregar } from './assets/js/ui.js';
+
+    iniciarLayout('productos');
+
+    const cont = document.querySelector('[data-detalle]');
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+
+    const cat = await cargarCatalogo().catch(() => null);
+    const p = cat?.productos.find((x) => x.id === id);
+
+    if (!p) {
+      document.querySelector('[data-miga-nombre]').textContent = 'No encontrado';
+      cont.innerHTML = `
+        <div class="resultado">
+          <h1 class="titulo-md">No encontramos este producto</h1>
+          <p class="lead">Puede que ya no esté disponible.</p>
+          <a class="btn" href="productos.html">Ver la colección</a>
+        </div>`;
+    } else {
+      render(p);
+    }
+
+    function render(p) {
+      document.title = `${p.nombre} · Corazón Culinario`;
+      document.querySelector('meta[name="description"]').setAttribute('content', p.descripcion);
+      document.querySelector('[data-miga-nombre]').textContent = p.nombre;
+
+      // Selección inicial: permite ?sabor=roja&tamano=925 en la URL.
+      const sel = opcionesPorDefecto(p);
+      (p.opciones || []).forEach((o) => {
+        const v = params.get(o.clave);
+        if (v && o.valores.some((x) => x.id === v)) sel[o.clave] = v;
+      });
+
+      // Miniaturas: imagen principal, variantes con foto y escena.
+      const fotos = [];
+      const agregarFoto = (src, alt) => { if (src && !fotos.some((f) => f.src === src)) fotos.push({ src, alt }); };
+      agregarFoto(p.imagen, p.nombre);
+      (p.opciones || []).forEach((o) => o.valores.forEach((v) => v.imagen && agregarFoto(v.imagen, `${p.nombre} ${v.nombre}`)));
+      agregarFoto(p.escena, `${p.nombre} en la mesa`);
+
+      const usos = p.idealPara || p.ingredientes;
+      const tituloUsos = p.idealPara ? 'Ideal para' : 'Ingredientes';
+
+      cont.innerHTML = `
+        <div class="detalle">
+          <div class="detalle__galeria">
+            <div class="detalle__foto"><img data-foto src="${imagenDe(p, sel)}" alt="${escapar(p.nombre)}" width="800" height="1000"></div>
+            ${fotos.length > 1 ? `<div class="detalle__miniaturas">${fotos.map((f) => `
+              <button type="button" data-mini="${f.src}" aria-label="Ver foto: ${escapar(f.alt)}" aria-pressed="false"><img src="${f.src}" alt="" loading="lazy"></button>`).join('')}
+            </div>` : ''}
+          </div>
+          <div class="detalle__info">
+            <div class="eyebrow">${escapar(p.subtitulo || '')}</div>
+            <h1 class="titulo-lg">${escapar(p.nombre)}</h1>
+            <div class="detalle__precio" data-precio></div>
+            <p class="detalle__desc">${escapar(p.descripcion)}</p>
+
+            ${(p.opciones || []).map((o) => `
+              <div class="detalle__bloque">
+                <div class="etiqueta">${escapar(o.etiqueta)}: <span data-elegido="${o.clave}" style="color:var(--carbon)"></span></div>
+                <div class="opciones" role="group" aria-label="${escapar(o.etiqueta)}">
+                  ${o.valores.map((v) => `
+                    <button class="opcion" type="button" data-opcion="${o.clave}" data-valor="${v.id}" aria-pressed="false">
+                      ${v.color ? `<span class="opcion__color" style="background:${v.color}"></span>` : ''}
+                      ${escapar(v.nombre)}${typeof v.precio === 'number' ? ` <small>${dinero(v.precio)}</small>` : ''}
+                    </button>`).join('')}
+                </div>
+              </div>`).join('')}
+
+            <div class="detalle__bloque">
+              ${tieneOpciones(p) ? '' : `<div class="etiqueta">Presentación: <span style="color:var(--carbon)">${escapar(p.presentacion)}</span></div>`}
+              <div class="comprar">
+                <div class="cantidad">
+                  <button type="button" data-menos aria-label="Quitar uno">−</button>
+                  <input type="number" value="1" min="1" max="24" aria-label="Cantidad" data-cant>
+                  <button type="button" data-mas aria-label="Agregar uno">+</button>
+                </div>
+                <button class="btn" type="button" data-agregar-detalle>Agregar al carrito</button>
+              </div>
+              <div class="aviso-envio">${ICONOS.camion}<span>Envío gratis en compras desde <strong>$500</strong>. Entregas en Guadalajara y Zapopan.</span></div>
+            </div>
+
+            ${usos ? `
+            <div class="detalle__bloque">
+              <div class="etiqueta">${tituloUsos}</div>
+              <ul class="etiquetas-uso">${usos.map((u) => `<li>${escapar(u)}</li>`).join('')}</ul>
+            </div>` : ''}
+          </div>
+        </div>`;
+
+      const foto = cont.querySelector('[data-foto]');
+      const cambiarFoto = (src) => {
+        if (foto.getAttribute('src') === src) return;
+        foto.style.opacity = 0;
+        setTimeout(() => { foto.src = src; foto.style.opacity = 1; }, 150);
+        cont.querySelectorAll('[data-mini]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mini === src)));
+      };
+
+      function actualizar({ foto: cambiar = true } = {}) {
+        cont.querySelector('[data-precio]').textContent = dinero(precioDe(p, sel));
+        cont.querySelectorAll('[data-opcion]').forEach((b) => b.setAttribute('aria-pressed', String(sel[b.dataset.opcion] === b.dataset.valor)));
+        (p.opciones || []).forEach((o) => {
+          cont.querySelector(`[data-elegido="${o.clave}"]`).textContent = o.valores.find((v) => v.id === sel[o.clave]).nombre;
+        });
+        if (cambiar) cambiarFoto(imagenDe(p, sel));
+      }
+
+      cont.addEventListener('click', (e) => {
+        const op = e.target.closest('[data-opcion]');
+        const mini = e.target.closest('[data-mini]');
+        const cant = cont.querySelector('[data-cant]');
+        if (op) { sel[op.dataset.opcion] = op.dataset.valor; actualizar(); }
+        else if (mini) cambiarFoto(mini.dataset.mini);
+        else if (e.target.closest('[data-mas]')) cant.value = Math.min(24, Number(cant.value) + 1);
+        else if (e.target.closest('[data-menos]')) cant.value = Math.max(1, Number(cant.value) - 1);
+        else if (e.target.closest('[data-agregar-detalle]')) {
+          const n = Math.min(24, Math.max(1, Math.floor(Number(cant.value) || 1)));
+          agregar(p.id, { ...sel }, n);
+          const variante = tieneOpciones(p) ? ` (${describirOpciones(p, sel)})` : '';
+          avisar(`${n} × ${p.nombre}${variante} en tu carrito`);
+        }
+      });
+
+      actualizar({ foto: false });
+      cont.querySelectorAll('[data-mini]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mini === foto.getAttribute('src'))));
+
+      // Relacionados: primero de otras categorías, máximo 3.
+      const otros = cat.productos.filter((x) => x.id !== p.id).sort((a, b) => (a.categoria === p.categoria) - (b.categoria === p.categoria)).slice(0, 3);
+      const rel = document.querySelector('[data-relacionados]');
+      rel.innerHTML = otros.map(tarjetaHTML).join('');
+      conectarAgregar(rel, cat);
+      document.querySelector('[data-relacionados-seccion]').hidden = false;
+      revelar(rel);
+    }
+  </script>
+</body>
+</html>

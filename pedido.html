@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tu pedido · Corazón Culinario</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#FAF7F1">
+  <link rel="icon" href="assets/img/marca/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div data-layout="header"></div>
+
+  <main>
+    <section class="contenedor" data-resultado></section>
+  </main>
+
+  <div data-layout="footer"></div>
+
+  <script type="module">
+    import { iniciarLayout } from './assets/js/layout.js';
+    import { vaciar } from './assets/js/carrito.js';
+    import { whatsappUrl } from './assets/js/config.js';
+    import { escapar } from './assets/js/catalogo.js';
+
+    iniciarLayout('');
+
+    // Mercado Pago regresa con ?status=... (o collection_status) y external_reference.
+    const q = new URLSearchParams(location.search);
+    const estado = q.get('estado') || q.get('collection_status') || q.get('status') || '';
+    let pedido = q.get('external_reference') || '';
+    try { pedido = pedido || sessionStorage.getItem('cc_pedido') || ''; } catch { /* sin almacenamiento */ }
+
+    const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    const ICON_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>';
+    const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+
+    const vistas = {
+      approved: {
+        clase: 'ok', icono: ICON_OK,
+        titulo: '¡Gracias por tu compra!',
+        texto: 'Recibimos tu pago. En breve te contactaremos por WhatsApp para coordinar la entrega.',
+      },
+      pending: {
+        clase: 'pendiente', icono: ICON_RELOJ,
+        titulo: 'Tu pago está en proceso',
+        texto: 'Si pagaste en OXXO o por transferencia, puede tardar un poco en acreditarse. Te avisaremos en cuanto se confirme.',
+      },
+      failure: {
+        clase: 'error', icono: ICON_X,
+        titulo: 'No se pudo completar el pago',
+        texto: 'Tu carrito sigue guardado. Puedes intentarlo de nuevo con otro método de pago.',
+      },
+    };
+    const clave = estado === 'approved' ? 'approved'
+      : ['pending', 'in_process', 'authorized'].includes(estado) ? 'pending'
+      : 'failure';
+    const v = vistas[clave];
+
+    if (clave !== 'failure') {
+      vaciar();
+      try { sessionStorage.removeItem('cc_pedido'); } catch { /* sin almacenamiento */ }
+    }
+
+    const msg = `Hola, acabo de hacer un pedido en la tienda en línea${pedido ? ` (pedido ${pedido})` : ''}.`;
+    document.querySelector('[data-resultado]').innerHTML = `
+      <div class="resultado resultado--${v.clase}">
+        <div class="resultado__icono">${v.icono}</div>
+        <h1 class="titulo-lg">${v.titulo}</h1>
+        <p class="lead">${v.texto}</p>
+        ${pedido ? `<div class="resultado__ref">Pedido ${escapar(pedido)}</div>` : ''}
+        <div class="resultado__acciones">
+          ${clave === 'failure'
+            ? '<a class="btn" href="checkout.html">Intentar de nuevo</a>'
+            : '<a class="btn" href="productos.html">Seguir comprando</a>'}
+          <a class="enlace" href="${whatsappUrl(msg)}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+        </div>
+      </div>`;
+  </script>
+</body>
+</html>

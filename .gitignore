@@ -1,0 +1,7 @@
+# Credenciales y pedidos: nunca al repositorio
+private/config.php
+private/pedidos/
+
+.DS_Store
+Thumbs.db
+node_modules/

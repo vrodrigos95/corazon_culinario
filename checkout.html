@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finalizar compra · Corazón Culinario</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#FAF7F1">
+  <link rel="icon" href="assets/img/marca/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div data-layout="header"></div>
+
+  <main>
+    <section class="pagina-cabecera contenedor">
+      <nav class="migas" aria-label="Ruta"><a href="index.html">Inicio</a><span>/</span><a href="productos.html">Productos</a><span>/</span><span>Checkout</span></nav>
+      <h1 class="titulo-lg">Finalizar compra</h1>
+    </section>
+
+    <section class="contenedor" style="padding-bottom: clamp(72px, 10vw, 120px)">
+      <div data-checkout-vacio class="oculto">
+        <div class="resultado" style="padding-top: 0">
+          <p class="lead">Tu carrito está vacío.</p>
+          <a class="btn" href="productos.html">Ver productos</a>
+        </div>
+      </div>
+
+      <div class="checkout" data-checkout>
+        <form class="form" data-form novalidate>
+          <fieldset>
+            <legend><span class="pilar__num">01</span> Contacto</legend>
+            <div class="campo campo--completo">
+              <label for="nombre">Nombre completo</label>
+              <input id="nombre" name="nombre" autocomplete="name" required maxlength="80">
+              <span class="campo__error">Escribe tu nombre.</span>
+            </div>
+            <div class="campo">
+              <label for="email">Correo electrónico</label>
+              <input id="email" name="email" type="email" autocomplete="email" required maxlength="120">
+              <span class="campo__error">Escribe un correo válido.</span>
+            </div>
+            <div class="campo">
+              <label for="telefono">Teléfono / WhatsApp</label>
+              <input id="telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="10 dígitos">
+              <span class="campo__error">Escribe un teléfono de 10 dígitos.</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="pilar__num">02</span> Entrega</legend>
+            <div class="campo campo--completo">
+              <label for="calle">Calle y número</label>
+              <input id="calle" name="calle" autocomplete="address-line1" required maxlength="120">
+              <span class="campo__error">Escribe la calle y número.</span>
+            </div>
+            <div class="campo">
+              <label for="colonia">Colonia</label>
+              <input id="colonia" name="colonia" autocomplete="address-line2" required maxlength="80">
+              <span class="campo__error">Escribe la colonia.</span>
+            </div>
+            <div class="campo">
+              <label for="cp">Código postal</label>
+              <input id="cp" name="cp" autocomplete="postal-code" inputmode="numeric" required maxlength="5" pattern="\d{5}">
+              <span class="campo__error">Código postal de 5 dígitos.</span>
+            </div>
+            <div class="campo campo--completo">
+              <label for="municipio">Municipio</label>
+              <select id="municipio" name="municipio" required>
+                <option value="">Selecciona…</option>
+                <option>Guadalajara</option>
+                <option>Zapopan</option>
+                <option>Otro (confirmaremos disponibilidad)</option>
+              </select>
+              <span class="campo__error">Selecciona un municipio.</span>
+            </div>
+            <div class="campo campo--completo">
+              <label for="referencias">Referencias (opcional)</label>
+              <input id="referencias" name="referencias" maxlength="160" placeholder="Entre calles, color de la casa…">
+            </div>
+            <div class="campo campo--completo">
+              <label for="notas">Notas del pedido (opcional)</label>
+              <textarea id="notas" name="notas" maxlength="400" placeholder="Horario preferido de entrega, indicaciones…"></textarea>
+            </div>
+            <p class="form__ayuda campo--completo">Entregamos en Guadalajara y Zapopan. Te contactaremos por WhatsApp para coordinar el día de entrega.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend><span class="pilar__num">03</span> Pago</legend>
+            <div class="pago campo--completo">
+              <div class="pago__mp">
+                <span class="pago__mp-logo" aria-hidden="true">MP</span>
+                <div>
+                  <strong>Mercado Pago</strong>
+                  <span>Tarjeta de crédito o débito, OXXO, transferencia o saldo en Mercado Pago. Te llevaremos a su sitio seguro para pagar.</span>
+                </div>
+              </div>
+              <div class="alerta" role="alert" data-error hidden></div>
+              <button class="btn btn--bloque" type="submit" data-pagar>Pagar con Mercado Pago</button>
+              <p class="form__ayuda centro">Al continuar aceptas que usemos tus datos únicamente para procesar y entregar tu pedido.</p>
+            </div>
+          </fieldset>
+        </form>
+
+        <aside class="checkout__resumen" aria-label="Resumen del pedido">
+          <h2>Tu pedido</h2>
+          <div data-resumen-lineas></div>
+          <div data-resumen-progreso></div>
+          <div class="totales" data-resumen-totales></div>
+          <a class="enlace" href="productos.html" style="align-self:flex-start">Seguir comprando</a>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div data-layout="footer"></div>
+
+  <script type="module">
+    import { iniciarLayout, lineaHTML, progresoEnvio } from './assets/js/layout.js';
+    import { resumen, obtenerItems, alCambiar } from './assets/js/carrito.js';
+    import { dinero } from './assets/js/catalogo.js';
+    import { API_CHECKOUT } from './assets/js/config.js';
+
+    iniciarLayout('');
+
+    const form = document.querySelector('[data-form]');
+    const errorBox = document.querySelector('[data-error]');
+    const btnPagar = document.querySelector('[data-pagar]');
+    const CLAVE_DATOS = 'cc_checkout_datos';
+
+    async function pintar() {
+      const r = await resumen();
+      const vacio = r.lineas.length === 0;
+      document.querySelector('[data-checkout]').classList.toggle('oculto', vacio);
+      document.querySelector('[data-checkout-vacio]').classList.toggle('oculto', !vacio);
+      if (vacio) return;
+      document.querySelector('[data-resumen-lineas]').innerHTML = r.lineas.map((l) => lineaHTML(l, { editable: false })).join('');
+      document.querySelector('[data-resumen-progreso]').innerHTML = progresoEnvio(r.subtotal, r.config);
+      document.querySelector('[data-resumen-totales]').innerHTML = `
+        <div class="totales__fila"><span>Subtotal</span><span>${dinero(r.subtotal)}</span></div>
+        <div class="totales__fila"><span>Envío</span><span>${r.envio === 0 ? '<span class="gratis">Gratis</span>' : dinero(r.envio)}</span></div>
+        <div class="totales__fila totales__fila--total"><span>Total</span><span>${dinero(r.total)}</span></div>`;
+    }
+    pintar();
+    alCambiar(pintar);
+
+    // Recuerda los datos de contacto en este navegador.
+    try {
+      const guardados = JSON.parse(localStorage.getItem(CLAVE_DATOS) || '{}');
+      Object.entries(guardados).forEach(([k, v]) => { if (form.elements[k] && k !== 'notas') form.elements[k].value = v; });
+    } catch { /* sin almacenamiento */ }
+
+    const validadores = {
+      nombre: (v) => v.trim().length >= 3,
+      email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+      telefono: (v) => v.replace(/\D/g, '').length >= 10,
+      calle: (v) => v.trim().length >= 3,
+      colonia: (v) => v.trim().length >= 2,
+      cp: (v) => /^\d{5}$/.test(v.trim()),
+      municipio: (v) => v !== '',
+    };
+
+    function validar(campo) {
+      const fn = validadores[campo.name];
+      if (!fn) return true;
+      const ok = fn(campo.value);
+      campo.closest('.campo').classList.toggle('invalido', !ok);
+      return ok;
+    }
+
+    form.addEventListener('blur', (e) => { if (e.target.name) validar(e.target); }, true);
+    form.addEventListener('input', (e) => { if (e.target.closest('.campo.invalido')) validar(e.target); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.hidden = true;
+      const campos = Object.keys(validadores).map((k) => form.elements[k]);
+      const invalidos = campos.filter((c) => !validar(c));
+      if (invalidos.length) { invalidos[0].focus(); return; }
+
+      const cliente = Object.fromEntries(new FormData(form));
+      try { localStorage.setItem(CLAVE_DATOS, JSON.stringify(cliente)); } catch { /* sin almacenamiento */ }
+
+      btnPagar.disabled = true;
+      btnPagar.textContent = 'Conectando con Mercado Pago…';
+      try {
+        const resp = await fetch(API_CHECKOUT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: obtenerItems(), cliente }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data.init_point) throw new Error(data.error || 'No pudimos iniciar el pago.');
+        try { sessionStorage.setItem('cc_pedido', data.pedido); } catch { /* sin almacenamiento */ }
+        location.href = data.init_point;
+      } catch (err) {
+        errorBox.textContent = `${err.message} Si el problema continúa, escríbenos por WhatsApp al 331 452 9429.`;
+        errorBox.hidden = false;
+        btnPagar.disabled = false;
+        btnPagar.textContent = 'Pagar con Mercado Pago';
+      }
+    });
+  </script>
+</body>
+</html>

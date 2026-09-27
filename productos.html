@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Productos · Corazón Culinario</title>
+  <meta name="description" content="Chimi, Salsa Universal, Semillas Enchiladas, vinagretas y más. Salsas y aderezos de receta familiar hechos a mano en Guadalajara.">
+  <meta name="theme-color" content="#FAF7F1">
+  <link rel="icon" href="assets/img/marca/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div data-layout="header"></div>
+
+  <main>
+    <section class="pagina-cabecera contenedor">
+      <div class="eyebrow eyebrow--olivo">La colección</div>
+      <h1 class="titulo-lg">Recetas de la casa</h1>
+      <p>Salsas, vinagretas y aderezos que vuelven lo simple exquisito. Hechos a mano, en tandas pequeñas.</p>
+    </section>
+
+    <section class="contenedor" style="padding-bottom: clamp(72px, 10vw, 120px)">
+      <div class="filtros" role="group" aria-label="Filtrar por categoría" data-filtros></div>
+      <div class="grid-productos" data-grid>
+        <div class="tarjeta"><div class="tarjeta__foto skeleton"></div></div>
+        <div class="tarjeta"><div class="tarjeta__foto skeleton"></div></div>
+        <div class="tarjeta"><div class="tarjeta__foto skeleton"></div></div>
+      </div>
+      <p class="centro oculto" data-sin-resultados style="padding: 48px 0; color: var(--texto)">No hay productos en esta categoría por ahora.</p>
+    </section>
+
+    <section class="seccion seccion--lino">
+      <div class="contenedor cita revelar">
+        <img src="assets/img/marca/corazon-cobre.png" alt="">
+        <blockquote>“Con nuestras salsas puedes enriquecer cualquier platillo de manera fácil y deliciosa.”</blockquote>
+        <div class="eyebrow">Envío gratis a partir de $500</div>
+      </div>
+    </section>
+  </main>
+
+  <div data-layout="footer"></div>
+
+  <script type="module">
+    import { iniciarLayout, revelar } from './assets/js/layout.js';
+    import { cargarCatalogo } from './assets/js/catalogo.js';
+    import { tarjetaHTML, conectarAgregar } from './assets/js/ui.js';
+
+    iniciarLayout('productos');
+
+    const grid = document.querySelector('[data-grid]');
+    const filtros = document.querySelector('[data-filtros]');
+    const vacio = document.querySelector('[data-sin-resultados]');
+
+    cargarCatalogo().then((cat) => {
+      const usadas = new Set(cat.productos.map((p) => p.categoria));
+      const cats = [{ id: 'todos', nombre: 'Todos' }, ...cat.categorias.filter((c) => usadas.has(c.id))];
+      filtros.innerHTML = cats.map((c) => `<button class="chip" type="button" data-cat="${c.id}" aria-pressed="false">${c.nombre}</button>`).join('');
+
+      grid.innerHTML = cat.productos.map(tarjetaHTML).join('');
+      conectarAgregar(grid, cat);
+
+      function filtrar(id) {
+        if (!cats.some((c) => c.id === id)) id = 'todos';
+        filtros.querySelectorAll('.chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === id)));
+        let visibles = 0;
+        grid.querySelectorAll('.tarjeta').forEach((t) => {
+          const ok = id === 'todos' || t.dataset.categoria === id;
+          t.classList.toggle('oculto', !ok);
+          if (ok) visibles++;
+        });
+        vacio.classList.toggle('oculto', visibles > 0);
+        revelar(grid);
+      }
+
+      filtros.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-cat]');
+        if (!b) return;
+        history.replaceState(null, '', b.dataset.cat === 'todos' ? location.pathname : `#${b.dataset.cat}`);
+        filtrar(b.dataset.cat);
+      });
+      window.addEventListener('hashchange', () => filtrar(location.hash.slice(1)));
+      filtrar(location.hash.slice(1) || 'todos');
+    }).catch(() => {
+      grid.innerHTML = '<p class="centro" style="grid-column:1/-1">No pudimos cargar los productos. Intenta de nuevo más tarde.</p>';
+    });
+  </script>
+</body>
+</html>
